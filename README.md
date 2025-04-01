@@ -218,3 +218,56 @@ Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
                             frequencyU=1,
                             num_core = 2)
 
+       # Transpose the corrected matrix and convert it to a data frame
+	taxa_correct2 <- t(tuned_taxa$tax_final)
+	taxa_correct2 <- as.data.frame(taxa_correct2)
+
+ 	# Create new ASV table, taxonomy table, sample data, phy tree and refseq
+	ASV <- otu_table(taxa_correct2, taxa_are_rows = TRUE)
+	TAXA <- tax_table(ps)
+	sampledata <- sample_data(ps)
+	phytree <- phy_tree(ps)
+	refseq <- refseq(ps)
+
+	# repack the objects into a level 4 phyloseq structural data
+	ps.bat <- phyloseq(ASV, TAXA, sampledata, phytree, refseq)
+
+	 # Check post batch effect correction
+	batch.eff.corr <- ps.bat %>%
+  	tax_fix() %>%
+  	ord_calc(method = "PCA") %>%
+  	ord_plot(alpha = 0.6, size = 2, color = "Batch") +
+	theme_classic(12) +
+  	geom_mark_ellipse(aes(color = Batch)) +
+  	scale_y_reverse()
+   
+	batch.eff.corr
+
+	batch.compare <- batch.eff + batch.eff.corr
+
+ 	# Save plot
+	ggsave(plot = batch.compare, path = plots.dir, filename = ("batch_compare.pdf"), 
+       	width = 14, height = 5, dpi = "retina")
+
+ 	# Remove Unassigned in kingdom of tax table
+	ps <- subset_taxa(ps, Kingdom != "Unassigned")
+	ps.bat <- subset_taxa(ps.bat, Kingdom != "Unassigned")
+
+ 	# Remove Eukaroyta
+	ps <- subset_taxa(ps, Kingdom != "d__Eukaryota")
+	ps.bat <- subset_taxa(ps.bat, Kingdom != "d__Eukaryota")
+
+ 	# Remove NA in Phylum of tax table
+	ps <- subset_taxa(ps, Phylum != "NA")
+	ps.bat <- subset_taxa(ps.bat, Phylum != "NA")
+
+ 	# Fix NA values in the tax_table of other ranks by propagation
+	ps <- tax_fix(ps)
+	ps.bat <- tax_fix(ps.bat)
+
+ 	# Get read counts
+	readcount_ps <- data.table(as(sample_data(ps.bat), "data.frame"),
+                             TotalReads = sample_sums(ps.bat), 
+                             keep.rownames = TRUE)
+	write.csv(readcount_ps, "readcount_ps.csv")
+	head(readcount_ps[order(readcount_ps$TotalReads), c("rn", "TotalReads")])
