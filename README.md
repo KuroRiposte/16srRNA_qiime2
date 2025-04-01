@@ -144,3 +144,22 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
     
 ### Proceed to R
+
+	library(speedyseq)
+	library(qiime2R)
+	library(microViz)
+	library(data.table)
+	library(tidyverse)
+	library(patchwork)
+	library(ggrepel)
+	library(ComplexHeatmap)
+	library(phyloseq)
+	library(ggnewscale)
+	library(lefser)
+	library(mia)
+	library(ggforce)
+	library(ape)
+	library(doParallel)
+	library(ConQuR)
+	library(mirlyn)
+
