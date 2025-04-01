@@ -164,4 +164,57 @@ Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
 	library(doParallel)
 	library(ConQuR)
 	library(mirlyn)
+ 	
+  	# Create dir to hold plots
+	dir.create("./visualization")
+	plots.dir <- "./visualization"
+
+
+	# Store DNA Sequences
+	dna <- Biostrings::DNAStringSet(taxa_names(ps))
+	names(dna) <- taxa_names(ps)
+	ps <- merge_phyloseq(ps, dna) 
+	taxa_names(ps) <- paste0("ASV", seq(ntaxa(ps)))
+
+	# Check for presence of batch effects
+	batch.eff_wk0 <- ps %>%
+  	tax_fix() %>%
+  	ord_calc(method = "PCA") %>%
+  	ord_plot(alpha = 0.6, size = 2, color = "Batch") +
+  	theme_classic(12) +
+  	geom_mark_ellipse(aes(color = Batch)) +
+  	scale_y_reverse()
+   
+	batch.eff_wk0
+ 
+	# Save plot
+	ggsave(plot = batch.eff_wk0, path = plots.dir, filename = ("batch_eff.pdf"), 
+       width = 14, height = 10, dpi = "retina")
+
+	# Attempt to remove btch effects
+	B <- as.data.frame(ps@otu_table)
+	B <- t(B)
+	B <- as.data.frame(B)
+
+	# Extract batch ID from sample data
+	batchid <- ps@sam_data$Batch
+	summary(batchid)
+
+	# Extract covariates
+	D = ps@sam_data[, c('Genotype')] #covar
+	summary(D)
+
+	# Correct for batch effects using ConQuR package
+	options(warn=-1) # required to call
+	set.seed(2702)
+	tuned_taxa <- Tune_ConQuR(tax_tab=B, batchid=batchid, covariates=D,
+                            batch_ref_pool=c("1", "2"),
+                            logistic_lasso_pool=F, 
+                            quantile_type_pool=c("standard", "lasso"),
+                            simple_match_pool=F,
+                            lambda_quantile_pool=c(NA, "2p/n"),
+                            interplt_pool=F,
+                            frequencyL=0,
+                            frequencyU=1,
+                            num_core = 2)
 
