@@ -271,3 +271,34 @@ Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
                              keep.rownames = TRUE)
 	write.csv(readcount_ps, "readcount_ps.csv")
 	head(readcount_ps[order(readcount_ps$TotalReads), c("rn", "TotalReads")])
+
+ 	# Generate rarefaction curve to estimate the depth to rarefy
+	ps <- orient_taxa(ps, as = "rows")
+	rarefy_ps <- rarefy_whole_rep(ps, rep = 100, set.seed = 2702)
+	rare_curve <- rarecurve(rarefy_ps, sample = "Sample")
+	rare_curve
+	ggsave(plot = rare_curve, path = plots.dir, filename = ("rarecurve.pdf"), 
+       	width = 14, height = 10, dpi = "retina")
+
+ 	# Repeated rarefy
+	mirl <- mirl((ps), rep = 1000, set.seed = 2702)
+ 	mirl_otu <- vector("list", length(mirl))
+	for (i in 1:length(mirl)){
+  	colnames(mirl[[i]]@otu_table) <- paste0(colnames(mirl[[i]]@otu_table), "_",i)
+  	(mirl_otu[[i]] <- mirl[[i]]@otu_table)
+	}
+ 
+	mirl_rep_df <- do.call(cbind, mirl_otu)
+	ps_id <- ps@sam_data@row.names
+	average_counts <- vector("list", length(ps_id))
+	for (i in 1:length(ps_id)){
+  	sample_df <- mirl_rep_df[,grepl(ps_id[[i]], colnames(mirl_rep_df))]
+  	sample_average <- data.frame(rowMeans(sample_df))
+  	colnames(sample_average) <- ps_id[[i]]
+ 	average_counts[[i]] <- sample_average
+	}
+ 
+	average_count_df <- do.call(cbind, average_counts)
+	ps.mirl <- ps
+	average_count_dm <- data.matrix(average_count_df)
+	ps.mirl@otu_table@.Data <- average_count_dm
