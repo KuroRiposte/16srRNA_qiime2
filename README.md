@@ -1,5 +1,6 @@
 0. Activate conda env for qiime
 
+
 	conda activate qiime2-amplicon-xxxx.x
 
 For qiime2 demultiplexed paired ends reads, binned quality scores
@@ -54,12 +55,12 @@ For qiime2 demultiplexed paired ends reads, binned quality scores
 
 6. dada2 (trunc len depends on the QC done in step 5, use --p-trunc-len-f/r for forward/reverse read) *add --p-n-threads 0 if PC can support the ram usage. Change the number accordingly to the sequence length.
 
-	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 225 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 6 --p-no-hashed-feature-ids
+	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 72 --p-no-hashed-feature-ids
 
 
 7. View summary of statistics
 
-	qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file path to /manifest.txt
+	qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file <path>/manifest.txt
 
 	qiime feature-table tabulate-seqs --i-data rep-seqs.qza --o-visualization rep-seqs.qzv
 
@@ -97,19 +98,19 @@ For qiime2 demultiplexed paired ends reads, binned quality scores
  
 	qiime rescript parse-silva-taxonomy --i-taxonomy-tree taxtree-silva-138.2-nr99.qza --i-taxonomy-map taxmap-silva-138.2-ssu-nr99.qza --i-taxonomy-ranks taxranks-silva-138.2-ssu-nr99.qza --o-taxonomy silva-138.2-ssu-nr99-tax.qza --p-rank-propagation
  
-	qiime rescript cull-seqs --i-sequences silva-138.2-ssu-nr99-seqs.qza --o-clean-sequences silva-138.2-ssu-nr99-seqs-cleaned.qza
+	qiime rescript cull-seqs --i-sequences silva-138.2-ssu-nr99-seqs.qza --o-clean-sequences silva-138.2-ssu-nr99-seqs-cleaned.qza --p-n-jobs 72
  
 	qiime rescript filter-seqs-length-by-taxon --i-sequences silva-138.2-ssu-nr99-seqs-cleaned.qza --i-taxonomy silva-138.2-ssu-nr99-tax.qza --p-labels Archaea Bacteria Eukaryota --p-min-lens 900 1200 1400 --o-filtered-seqs silva-138.2-ssu-nr99-seqs-filt.qza --o-discarded-seqs silva-138.2-ssu-nr99-seqs-discard.qza
  
 	qiime rescript dereplicate --i-sequences silva-138.2-ssu-nr99-seqs-filt.qza --i-taxa silva-138.2-ssu-nr99-tax.qza --p-mode 'uniq' --o-dereplicated-sequences silva-138.2-ssu-nr99-seqs-derep-uniq.qza --o-dereplicated-taxa silva-138.2-ssu-nr99-tax-derep-uniq.qza
  
-	qiime feature-classifier extract-reads --i-sequences silva-138.2-ssu-nr99-seqs-derep-uniq.qza --p-f-primer ACTCCTACGGGAGGCAGCAG --p-r-primer GGACTACHVGGGTWTCTAAT --p-n-jobs 2 --p-read-orientation 'forward' --o-reads silva-138.2-ssu-nr99-seqs-338f-806r.qza
+	qiime feature-classifier extract-reads --i-sequences silva-138.2-ssu-nr99-seqs-derep-uniq.qza --p-f-primer ACTCCTACGGGAGGCAGCAG --p-r-primer GGACTACHVGGGTWTCTAAT --p-read-orientation 'forward' --o-reads silva-138.2-ssu-nr99-seqs-338f-806r.qza --p-n-jobs 72
  
 	qiime rescript dereplicate --i-sequences silva-138.2-ssu-nr99-seqs-338f-806r.qza --i-taxa silva-138.2-ssu-nr99-tax-derep-uniq.qza --p-mode 'uniq' --o-dereplicated-sequences silva-138.2-ssu-nr99-seqs-338f-806r-uniq.qza --o-dereplicated-taxa  silva-138.2-ssu-nr99-tax-338f-806r-derep-uniq.qza
  
 	qiime feature-classifier fit-classifier-naive-bayes --i-reference-reads silva-138.2-ssu-nr99-seqs-338f-806r-uniq.qza --i-reference-taxonomy silva-138.2-ssu-nr99-tax-338f-806r-derep-uniq.qza --o-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza
  
-	mv silva-138.2-ssu-nr99-338f-806r-classifier.qza /home/shaun/MS241025-0158/output/silva-138.2-ssu-nr99-338f-806r-classifier.qza
+	mv silva-138.2-ssu-nr99-338f-806r-classifier.qza /home/shaun/MS241025-0158/output/silva-138.2-ssu-nr99-338f-806r-classifier.qza --p-n-jobs 72
 
 
  9.2 for greengenes2 based taxonomy
@@ -124,7 +125,7 @@ For qiime2 demultiplexed paired ends reads, binned quality scores
  
 	wget https://ftp.microbio.me/greengenes_release/current/2024.09.taxonomy.asv.nwk.qza
  
-	qiime greengenes2 non-v4-16s --i-table table.qza --i-sequences rep-seqs.qza --i-backbone 2024.09.backbone.full-length.fna.qza --o-mapped-table gg2-filtered-table.qza --o-representatives gg2-filtered-rep-seqs.qza
+	qiime greengenes2 non-v4-16s --i-table <path>/table.qza --i-sequences <path>/rep-seqs.qza --i-backbone 2024.09.backbone.full-length.fna.qza --o-mapped-table gg2-filtered-table.qza --o-representatives gg2-filtered-rep-seqs.qza
  
 	qiime greengenes2 taxonomy-from-table --i-reference-taxonomy 2024.09.taxonomy.asv.nwk.qza --i-table gg2-filtered-table.qza --o-classification taxonomy.qza
 
