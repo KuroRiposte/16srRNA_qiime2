@@ -1,8 +1,8 @@
 ### Activate conda env for qiime
 
-``
+
 	conda activate qiime2-amplicon-xxxx.x
-``
+
 
 
 ### For qiime2 demultiplexed paired ends reads, binned quality scores
@@ -11,21 +11,21 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
 **1st column - sample-id**
 
-``
+
 	ls *1.fq.gz | cut -c x-x > name.txt
-``
+
 
 **2nd column - forward-absolute-filepath**
 
-``
+
 	realpath *1.fq.gz > forward.txt
-``
+
 
 **3rd column - reverse-absolute-filepath**
 
-``
+
 	realpath *2.fq.gz > reverse.txt
-``
+
 
 **For other columns, add any other relevant metadata such as batch/cage etc.**
 
@@ -218,7 +218,7 @@ Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
                             frequencyU=1,
                             num_core = 2)
 
-       # Transpose the corrected matrix and convert it to a data frame
+        # Transpose the corrected matrix and convert it to a data frame
 	taxa_correct2 <- t(tuned_taxa$tax_final)
 	taxa_correct2 <- as.data.frame(taxa_correct2)
 
@@ -232,7 +232,7 @@ Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
 	# repack the objects into a level 4 phyloseq structural data
 	ps.bat <- phyloseq(ASV, TAXA, sampledata, phytree, refseq)
 
-	 # Check post batch effect correction
+	# Check post batch effect correction
 	batch.eff.corr <- ps.bat %>%
   	tax_fix() %>%
   	ord_calc(method = "PCA") %>%
