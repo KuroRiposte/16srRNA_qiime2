@@ -140,7 +140,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
 ### Visualize taxonomy
     
-    	qiime metadata tabulate --m-input-file taxonomy.qza --o-visualization taxonomy.qzv
+	qiime metadata tabulate --m-input-file taxonomy.qza --o-visualization taxonomy.qzv
 
     
 ### Proceed to R
