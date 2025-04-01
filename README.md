@@ -145,6 +145,8 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
     
 ### Proceed to R
 
+Files required are: table.qza, rooted-tree.qza, taxonomy.qza, manifest.txt
+
 	library(speedyseq)
 	library(qiime2R)
 	library(microViz)
