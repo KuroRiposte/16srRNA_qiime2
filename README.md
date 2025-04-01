@@ -73,9 +73,9 @@ For qiime2 demultiplexed paired ends reads, binned quality scores
 
 9.1. construct reference database based on silva 16S rRNA gene database, that is amplicon/primer specific - only need to be done if using different primer and a new database (https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494) -> for silva based taxonomy
 
-	mkdir taxonomy
+	mkdir silva
  
-	cd taxonomy
+	cd silva
  
 	wget https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/taxonomy/tax_slv_ssu_138.2.txt.gz
  
