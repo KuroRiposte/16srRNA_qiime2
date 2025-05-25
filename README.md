@@ -52,7 +52,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
 	cd output
 
-	qiime cutadapt trim-paired --i-demultiplexed-sequences demux.qza --p-front-f ACTCCTACGGGAGGCAGCAG --p-front-r GGACTACHVGGGTWTCTAAT --o-trimmed-sequences trimmed-demux.qza --p-match-read-wildcards --verbose
+	qiime cutadapt trim-paired --i-demultiplexed-sequences demux.qza --p-front-f ACTCCTACGGGAGGCAGCAG --p-front-r GGACTACHVGGGTWTCTAAT --o-trimmed-sequences trimmed-demux.qza --p-match-read-wildcards --p-discard-untrimmed --verbose
 
  
 ### Visualize the trimmed sequence quality with fastQC/multiQC
