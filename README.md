@@ -58,6 +58,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 ### Visualize the trimmed sequence quality with fastQC/multiQC
    
 	qiime tools extract --input-path trimmed-demux.qza --output-path trimmed_qc/
+ 	qiime demux summarize --i-data trimmed-demux.qza --o-visualization trimmed-demux.qzv
 
 	repeat 3. but change directory
 
@@ -65,7 +66,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 ### DADA2 (trunc len depends on the QC done in step 5, use --p-trunc-len-f/r to trim forward/reverse read based on quality scores if needed)
 ### *add --p-n-threads x if PC can support the ram/cpu usage.
 
-	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 72 --p-no-hashed-feature-ids
+	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 72
 
 
 ### View summary of statistics
