@@ -66,7 +66,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 ### DADA2 (trunc len depends on the QC done in step 5, use --p-trunc-len-f/r to trim forward/reverse read based on quality scores if needed)
 ### *add --p-n-threads x if PC can support the ram/cpu usage.
 
-	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 72 --p-no-hashed-feature-ids
+	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --verbose --p-n-threads 6 --p-no-hashed-feature-ids
 
 
 ### View summary of statistics
@@ -123,7 +123,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
  
 	qiime feature-classifier fit-classifier-naive-bayes --i-reference-reads silva-138.2-ssu-nr99-seqs-338f-806r-uniq.qza --i-reference-taxonomy silva-138.2-ssu-nr99-tax-338f-806r-derep-uniq.qza --o-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza
  
-	qiime feature-classifier classify-sklearn --i-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza --i-reads <path>/rep-seqs.qza --o-classification taxonomy.qza
+	qiime feature-classifier classify-sklearn --i-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza --i-reads rep-seqs.qza --o-classification taxonomy.qza
 
 
  ### For greengenes2 based taxonomy
