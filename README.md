@@ -151,4 +151,17 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
     
 ### Proceed to R
+
+### For picrust2
+
+	qiime tools export --input-path rep-seqs.qza --output-path rep-seqs.fasta
+
+	qiime tools export --input-path table.qza --output-path table.biom
+ 
+	conda activate picrust2
+
+ 	picrust2_pipeline.py -s dna-sequences.fasta -i feature-table.biom -o picrust2_out_pipeline -p 1
+
+ 	qiime picrust2 full-pipeline --i-table table.qza --i-seq rep-seqs.qza --output-dir q2-picrust2_output --p-placement-tool epa-n --p-threads 1 --p-hsp-method m --p-max-nsti 2 --verbose
+
 ### Files required are: table.qza (or gg2 specific table), rooted-tree.qza, taxonomy.qza, manifest.txt
