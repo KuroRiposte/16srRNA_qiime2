@@ -71,7 +71,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
 ### View summary of statistics
 
-	qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file <path>/manifest.txt
+	qiime feature-table summarize-plus --i-table table.qza  --o-summary asv-table.qzv --o-sample-frequencies sample-frequencies.qza --o-feature-frequencies feature-frequencies.qza --m-metadata-file <path>/manifest.txt
 
 	qiime feature-table tabulate-seqs --i-data rep-seqs.qza --o-visualization rep-seqs.qzv
 
