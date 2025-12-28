@@ -66,21 +66,35 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 ### DADA2 (trunc len depends on the QC done in step 5, use --p-trunc-len-f/r to trim forward/reverse read based on quality scores if needed)
 ### *add --p-n-threads x if PC can support the ram/cpu usage.
 
-	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --o-base-transition-stats base-transition-stats.qza --verbose --p-n-threads 6 --p-no-hashed-feature-ids
+	qiime dada2 denoise-paired --i-demultiplexed-seqs trimmed-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-table table.qza --o-representative-sequences rep-seqs.qza --o-denoising-stats denoising-stats.qza --o-base-transition-stats base-transition-stats.qza --verbose --p-n-threads 6
 
 
 ### View summary of statistics
 
+	qiime metadata tabulate --m-input-file denoising-stats.qza --o-visualization denoising-stats.qzv
+	
 	qiime feature-table summarize-plus --i-table table.qza  --o-summary table.qzv --o-sample-frequencies sample-frequencies.qza --o-feature-frequencies feature-frequencies.qza --m-metadata-file <path>/manifest.txt
 
-	qiime feature-table tabulate-seqs --i-data rep-seqs.qza --o-visualization rep-seqs.qzv
+	qiime feature-table tabulate-seqs --i-data rep-seqs.qza --m-metadata-file feature-frequencies.qza --o-visualization rep-seqs.qzv
 
-	qiime metadata tabulate --m-input-file denoising-stats.qza --o-visualization denoising-stats.qzv
+
+### Removal of spurious ASV (<20 reads across all samples)
+
+	qiime feature-table filter-features --i-table table.qza --p-min-frequency 20 --o-filtered-table table-min20.qza
+
+	qiime feature-table filter-seqs --i-data rep-seqs.qza --i-table table-min20.qza --o-filtered-data rep-seqs-min20.qza
+
+
+### View new summary of statistics
+
+	qiime feature-table summarize-plus --i-table table-min20.qza  --o-summary table-min20.qzv --o-sample-frequencies sample-frequencies-min20.qza --o-feature-frequencies feature-frequencies-min20.qza --m-metadata-file <path>/manifest.txt
+
+	qiime feature-table tabulate-seqs --i-data rep-seqs-min20.qza --m-metadata-file feature-frequencies-min20.qza --o-visualization rep-seqs-min20.qzv
 
 
 ### Generate a tree for phylogenetic diversity analyses
 
-	qiime phylogeny align-to-tree-mafft-fasttree --i-sequences rep-seqs.qza --o-alignment aligned-rep-seqs.qza --o-masked-alignment masked-aligned-rep-seqs.qza --o-tree unrooted-tree.qza --o-rooted-tree rooted-tree.qza
+	qiime phylogeny align-to-tree-mafft-fasttree --i-sequences rep-seqs-min20.qza --o-alignment aligned-rep-seqs.qza --o-masked-alignment masked-aligned-rep-seqs.qza --o-tree unrooted-tree.qza --o-rooted-tree rooted-tree.qza
 
 
 ### Construct reference database based on silva 16S rRNA gene database, that is amplicon/primer specific
@@ -123,7 +137,7 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
  
 	qiime feature-classifier fit-classifier-naive-bayes --i-reference-reads silva-138.2-ssu-nr99-seqs-338f-806r-uniq.qza --i-reference-taxonomy silva-138.2-ssu-nr99-tax-338f-806r-derep-uniq.qza --o-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza
  
-	qiime feature-classifier classify-sklearn --i-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza --i-reads rep-seqs.qza --o-classification taxonomy.qza
+	qiime feature-classifier classify-sklearn --i-classifier silva-138.2-ssu-nr99-338f-806r-classifier.qza --i-reads rep-seqs-min20.qza --o-classification taxonomy.qza
 
 
  ### For greengenes2 based taxonomy
@@ -164,4 +178,4 @@ Create manifest.txt file (tab delimited), add some columns for metadata on sampl
 
  	qiime picrust2 full-pipeline --i-table table.qza --i-seq rep-seqs.qza --output-dir q2-picrust2_output --p-placement-tool epa-n --p-threads 1 --p-hsp-method m --p-max-nsti 2 --verbose
 
-### Files required are: table.qza (or gg2 specific table), rooted-tree.qza, taxonomy.qza, manifest.txt
+### Files required are: table-min20.qza (or gg2 specific table), rooted-tree.qza, taxonomy.qza, manifest.txt
